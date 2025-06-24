@@ -35,6 +35,17 @@ export function HelpModal() {
                 Create a chain of words by using the ending letters of the previous word as the start of your new word.
               </p>
             </div>
+ </div>
+ <div className="flex items-start gap-4">
+ <Star className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+ <div>
+ <h3 className="font-bold">Scoring</h3>
+ <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 mt-1">
+ <li>Each letter in [E, S, I, A, R] is worth 1 point.</li>
+ <li>Each letter in [J, Q, X, Z, W] is worth 5 points.</li>
+ <li>Any other letter is worth 3 points.</li>
+ </ul>
+ </div>
           </div>
           <div className="flex items-start gap-4">
             <Star className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
@@ -44,9 +55,9 @@ export function HelpModal() {
                 <li>Your word must be longer than 5 characters.</li>
                 <li>Your word must start with the last 2, 3, or 4 letters of the previous word.</li>
                 <li>Longer chains grant more points and time bonuses!</li>
-                <li className="pl-4"><strong>2-letter chain:</strong> +10 points, +2 seconds</li>
-                <li className="pl-4"><strong>3-letter chain:</strong> +40 points, +3 seconds</li>
-                <li className="pl-4"><strong>4-letter chain:</strong> +90 points, +4 seconds</li>
+ <li className="pl-4"><strong>2-letter match:</strong> +10 extra points, +2 seconds</li>
+ <li className="pl-4"><strong>3-letter match:</strong> +15 extra points, +3 seconds</li>
+ <li className="pl-4"><strong>4-letter match:</strong> +25 extra points, +4 seconds</li>
               </ul>
             </div>
           </div>

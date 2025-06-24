@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
-import { getRandomWord, isValidWord } from '@/lib/dictionary';
+import { calculateScore } from '@/lib/utils';
+import { getRandomWord, isValidWord } from '@/lib/valid-words';
+
 import { cn } from "@/lib/utils";
 import { HelpModal } from '@/components/help-modal';
 import { SocialShare } from '@/components/social-share';
@@ -32,7 +33,6 @@ export default function WordChainChallengePage() {
   const [isWrong, setIsWrong] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     setPreviousWord(getRandomWord());
@@ -76,39 +76,26 @@ export default function WordChainChallengePage() {
 
     const newWord = currentInput.trim().toLowerCase();
     
-    if (newWord.length <= 5) {
-      toast({ variant: 'destructive', title: "Word too short", description: "Words must be longer than 5 characters." });
+    if (newWord.length < 5) {
       setIsWrong(true);
       inputRef.current?.select();
       return;
     }
 
     if (!isValidWord(newWord)) {
-      toast({ variant: 'destructive', title: "Not a valid word", description: "That word isn't in our dictionary." });
       setIsWrong(true);
       inputRef.current?.select();
       return;
     }
     
-    let chainLength = 0;
-    if (newWord.startsWith(previousWord.slice(-4))) {
-        chainLength = 4;
-    } else if (newWord.startsWith(previousWord.slice(-3))) {
-        chainLength = 3;
-    } else if (newWord.startsWith(previousWord.slice(-2))) {
-        chainLength = 2;
-    }
+    const { score: points, timeBonus, isValidChain} = calculateScore(newWord, previousWord);
 
-    if (chainLength === 0) {
-      toast({ variant: 'destructive', title: "No chain!", description: `Word must start with the last 2, 3, or 4 letters of "${previousWord}".` });
+    if (!isValidChain) {
       setIsWrong(true);
       inputRef.current?.select();
       return;
     }
 
-    const points = chainLength * chainLength * 10;
-    const timeBonus = chainLength;
-    
     setScore(prev => prev + points);
     setTimeLeft(prev => Math.min(TOTAL_TIME, prev + timeBonus));
     setHistory(prev => [{ word: newWord, score: points }, ...prev]);
@@ -116,7 +103,7 @@ export default function WordChainChallengePage() {
     setCurrentInput('');
     setIsWrong(false);
 
-  }, [currentInput, gameState, previousWord, toast]);
+  }, [currentInput, gameState, previousWord]);
 
   const progressValue = useMemo(() => (timeLeft / TOTAL_TIME) * 100, [timeLeft]);
 
@@ -213,7 +200,6 @@ export default function WordChainChallengePage() {
           )}
         </CardFooter>
       </Card>
-      <AdBanner />
     </div>
   );
 }
